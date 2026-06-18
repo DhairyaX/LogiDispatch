@@ -307,6 +307,3 @@ python -m pytest route_optimizer/tests/ -v
 
 ---
 
-## License
-
-This project is provided as-is for educational and commercial prototyping purposes.
