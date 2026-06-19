@@ -8,6 +8,12 @@ build/
 *.egg
 *.whl
 
+# ── Environment Variables (IMPORTANT) ───────────────────────────
+.env
+.env.*
+*.env
+route_optimizer/.env
+
 # ── Virtual environments ────────────────────────────────────────
 .venv/
 venv/
@@ -31,3 +37,8 @@ coverage.xml
 # ── OS ──────────────────────────────────────────────────────────
 Thumbs.db
 Desktop.ini
+
+# ── Node / Frontend ─────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/

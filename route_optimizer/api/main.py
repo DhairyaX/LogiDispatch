@@ -51,8 +51,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "https://logi-dispatch-gfkvrkrot-dhairyaxs-projects.vercel.app/"
+        "https://logi-dispatch.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
-    FRONTEND_URL: str = "http://localhost:5173"
+    FRONTEND_URL: str = "https://logi-dispatch.vercel.app"
     
     # MongoDB Settings
     MONGODB_URI: str = "mongodb://localhost:27017"
