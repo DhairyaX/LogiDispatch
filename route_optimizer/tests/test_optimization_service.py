@@ -1,14 +1,14 @@
 """
-Tests for :mod:`route_optimizer.services.optimization_service`.
+Tests for :mod:`route_optimizer.optimization.services.optimization_service`.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from route_optimizer.models.location import Location
-from route_optimizer.services.distance_service import DistanceService
-from route_optimizer.services.optimization_service import OptimizationService
+from route_optimizer.optimization.models.location import Location
+from route_optimizer.optimization.services.distance_service import DistanceService
+from route_optimizer.optimization.services.optimization_service import OptimizationService
 
 
 # ── Fixtures ────────────────────────────────────────────────────

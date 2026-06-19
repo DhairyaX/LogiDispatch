@@ -14,14 +14,14 @@ from __future__ import annotations
 
 import pytest
 
-from route_optimizer.config.settings import DistanceSource
-from route_optimizer.models.location import Location
-from route_optimizer.models.vehicle import Vehicle
-from route_optimizer.models.vehicle_route import VehicleRoute
-from route_optimizer.services.distance_service import DistanceService
-from route_optimizer.services.metrics_service import MetricsService
-from route_optimizer.services.optimization_service import OptimizationService
-from route_optimizer.services.vehicle_service import VehicleService
+from route_optimizer.optimization.config.settings import DistanceSource
+from route_optimizer.optimization.models.location import Location
+from route_optimizer.optimization.models.vehicle import Vehicle
+from route_optimizer.optimization.models.vehicle_route import VehicleRoute
+from route_optimizer.optimization.services.distance_service import DistanceService
+from route_optimizer.optimization.services.metrics_service import MetricsService
+from route_optimizer.optimization.services.optimization_service import OptimizationService
+from route_optimizer.optimization.services.vehicle_service import VehicleService
 
 
 # ── Fixtures ────────────────────────────────────────────────────
@@ -400,10 +400,63 @@ class TestBackwardCompatibility:
         distance_matrix: list[list[int]],
     ) -> None:
         """The legacy solve() should still return a Route."""
-        from route_optimizer.models.route import Route
+        from route_optimizer.optimization.models.route import Route
         route = optimization_service.solve(
             sample_locations, distance_matrix,
         )
         assert isinstance(route, Route)
         assert route.total_distance > 0
         assert route.is_round_trip
+
+
+# ── Balancing Tests ─────────────────────────────────────────────
+
+
+class TestWorkloadBalancing:
+    """Tests for workload balancing features."""
+
+    def test_strict_balancing_limits_variance(
+        self,
+        optimization_service: OptimizationService,
+        sample_locations: list[Location],
+        distance_matrix: list[list[int]],
+    ) -> None:
+        """STRICT balancing should result in a lower standard deviation than DISTANCE_OPTIMAL."""
+        routes_strict = optimization_service.solve_vrp(
+            sample_locations, 
+            distance_matrix, 
+            vehicle_count=5,
+            balancing_mode="strict",
+            balance_weight=100
+        )
+        routes_optimal = optimization_service.solve_vrp(
+            sample_locations, 
+            distance_matrix, 
+            vehicle_count=5,
+            balancing_mode="distance_optimal",
+            balance_weight=100
+        )
+        
+        svc = MetricsService()
+        metrics_strict = svc.calculate_vrp(routes_strict, 1.0, vehicle_count=5)
+        metrics_optimal = svc.calculate_vrp(routes_optimal, 1.0, vehicle_count=5)
+        
+        # Strict mode should distribute workload more fairly than purely optimal mode
+        assert metrics_strict.stop_distribution_stddev <= metrics_optimal.stop_distribution_stddev
+        
+        # Strict mode should use more or equal number of vehicles
+        assert metrics_strict.vehicles_used >= metrics_optimal.vehicles_used
+
+    def test_utilization_calculation(self) -> None:
+        """Verify utilization calculation logic in MetricsService."""
+        depot = Location(id=0, name="W", latitude=0, longitude=0)
+        vr1 = VehicleRoute(0, "V1", [depot, depot, depot], 10.0, 5.0) # 1 stop
+        vr2 = VehicleRoute(1, "V2", [depot, depot, depot], 10.0, 5.0) # 1 stop
+        vr3 = VehicleRoute(2, "V3", [depot, depot], 0.0, 0.0) # 0 stops (idle)
+        
+        svc = MetricsService()
+        metrics = svc.calculate_vrp([vr1, vr2, vr3], 1.0, vehicle_count=4)
+        
+        # 2 vehicles used out of 4 available = 50%
+        assert metrics.vehicles_used == 2
+        assert metrics.vehicle_utilization_rate == 50.0

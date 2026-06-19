@@ -17,11 +17,11 @@ from __future__ import annotations
 
 import sys
 
-from route_optimizer.config.settings import settings
-from route_optimizer.data.sample_locations import get_sample_locations
-from route_optimizer.services.metrics_service import MetricsService
-from route_optimizer.services.route_service import RouteService
-from route_optimizer.utils.printer import (
+from route_optimizer.optimization.config.settings import settings
+from route_optimizer.optimization.data.sample_locations import get_sample_locations
+from route_optimizer.optimization.services.metrics_service import MetricsService
+from route_optimizer.optimization.services.route_service import RouteService
+from route_optimizer.optimization.utils.printer import (
     console,
     print_header,
     print_config_summary,
@@ -35,7 +35,7 @@ from route_optimizer.utils.printer import (
     print_footer,
     print_error,
 )
-from route_optimizer.utils.timer import Timer
+from route_optimizer.optimization.utils.timer import Timer
 
 
 def main() -> None:
@@ -47,6 +47,7 @@ def main() -> None:
         # ── Config summary ──────────────────────────────────────
         distance_source = settings.distance.distance_source.value
         optimization_mode = settings.optimizer.optimization_mode.value
+        balancing_mode = settings.optimizer.balancing_mode.value
         vehicle_count = settings.optimizer.vehicle_count
         print_config_summary(distance_source, optimization_mode, vehicle_count)
 
@@ -88,6 +89,7 @@ def main() -> None:
             vehicle_count=vehicle_count,
             distance_source=actual_source if not route_service.used_fallback else "euclidean (fallback)",
             optimization_mode=optimization_mode,
+            balancing_mode=balancing_mode,
         )
 
         # ── 7. Display summary ──────────────────────────────────

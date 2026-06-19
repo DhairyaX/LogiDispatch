@@ -1,5 +1,5 @@
 """
-Tests for :mod:`route_optimizer.services.distance_service`.
+Tests for :mod:`route_optimizer.optimization.services.distance_service`.
 """
 
 from __future__ import annotations
@@ -8,9 +8,9 @@ import math
 
 import pytest
 
-from route_optimizer.config.settings import DistanceSource
-from route_optimizer.models.location import Location
-from route_optimizer.services.distance_service import DistanceService
+from route_optimizer.optimization.config.settings import DistanceSource
+from route_optimizer.optimization.models.location import Location
+from route_optimizer.optimization.services.distance_service import DistanceService
 
 
 # ── Fixtures ────────────────────────────────────────────────────

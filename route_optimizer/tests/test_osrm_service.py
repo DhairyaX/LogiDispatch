@@ -1,5 +1,5 @@
 """
-Tests for :mod:`route_optimizer.services.osrm_service` and
+Tests for :mod:`route_optimizer.optimization.services.osrm_service` and
 OSRM-related integration through the distance service.
 """
 
@@ -10,10 +10,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from route_optimizer.cache.route_cache import RouteCache
-from route_optimizer.config.settings import DistanceSource, OptimizationMode
-from route_optimizer.models.location import Location
-from route_optimizer.services.distance_service import DistanceService
-from route_optimizer.services.osrm_service import OsrmService, OsrmServiceError
+from route_optimizer.optimization.config.settings import DistanceSource, OptimizationMode
+from route_optimizer.optimization.models.location import Location
+from route_optimizer.optimization.services.distance_service import DistanceService
+from route_optimizer.optimization.services.osrm_service import OsrmService, OsrmServiceError
 
 
 # ── Fixtures ────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ class TestRouteCache:
 class TestOsrmServiceDistanceMatrix:
     """Tests for ``OsrmService.get_distance_matrix``."""
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_returns_scaled_distance_matrix(
         self,
         mock_get: MagicMock,
@@ -152,7 +152,7 @@ class TestOsrmServiceDistanceMatrix:
         # Diagonal should be 0
         assert matrix[0][0] == 0
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_matrix_dimensions(
         self,
         mock_get: MagicMock,
@@ -181,7 +181,7 @@ class TestOsrmServiceDistanceMatrix:
 class TestOsrmServiceDurationMatrix:
     """Tests for ``OsrmService.get_duration_matrix``."""
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_returns_scaled_duration_matrix(
         self,
         mock_get: MagicMock,
@@ -212,7 +212,7 @@ class TestOsrmServiceDurationMatrix:
 class TestOsrmServiceRouteData:
     """Tests for ``OsrmService.get_route_data``."""
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_returns_both_matrices(
         self,
         mock_get: MagicMock,
@@ -240,7 +240,7 @@ class TestOsrmServiceRouteData:
 class TestOsrmServiceErrors:
     """Tests for OSRM error handling."""
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_timeout_raises_osrm_error(
         self,
         mock_get: MagicMock,
@@ -254,7 +254,7 @@ class TestOsrmServiceErrors:
         with pytest.raises(OsrmServiceError, match="timed out"):
             svc.get_distance_matrix(sample_locations)
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_connection_error_raises_osrm_error(
         self,
         mock_get: MagicMock,
@@ -268,7 +268,7 @@ class TestOsrmServiceErrors:
         with pytest.raises(OsrmServiceError, match="Could not connect"):
             svc.get_distance_matrix(sample_locations)
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_osrm_error_code_raises(
         self,
         mock_get: MagicMock,
@@ -291,7 +291,7 @@ class TestOsrmServiceErrors:
 class TestDistanceServiceFallback:
     """Tests for OSRM-to-Euclidean fallback in DistanceService."""
 
-    @patch("route_optimizer.services.distance_service.DistanceService._osrm_distance_matrix")
+    @patch("route_optimizer.optimization.services.distance_service.DistanceService._osrm_distance_matrix")
     def test_fallback_on_osrm_failure(
         self,
         mock_osrm: MagicMock,
@@ -338,7 +338,7 @@ class TestDistanceServiceFallback:
 class TestOsrmCaching:
     """Tests for OSRM response caching."""
 
-    @patch("route_optimizer.services.osrm_service.requests.get")
+    @patch("route_optimizer.optimization.services.osrm_service.requests.get")
     def test_second_call_uses_cache(
         self,
         mock_get: MagicMock,

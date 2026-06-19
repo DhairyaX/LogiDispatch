@@ -206,7 +206,15 @@ If `vehicle_count = 1`, the system automatically degenerates to solving the clas
 
 Stops are assigned automatically by the `OptimizationService` using OR-Tools. 
 
-To prevent the solver from simply assigning all stops to one vehicle (which technically has the lowest total transit cost), a **Distance Dimension** is added with a `GlobalSpanCostCoefficient`. This heavily penalizes the difference (span) between the longest and shortest route, forcing the solver to balance the stops across the entire fleet.
+To distribute workload effectively across the fleet, the engine uses a custom `Count` dimension with soft constraint bounds and global span cost penalties.
+
+### Workload Balancing Modes
+
+The platform supports three distinct workload balancing modes, configurable in `settings.py`:
+
+* **`DISTANCE_OPTIMAL`**: Disables workload balancing completely. The solver strictly minimises absolute distance. This is the most cost-efficient mathematically but can result in some vehicles sitting idle while others are overloaded.
+* **`BALANCED`**: Evaluates distance alongside workload. The solver will attempt to evenly distribute stops across available vehicles, but will allow some variance to avoid pathologically long driving detours. Best for standard operations.
+* **`STRICT`**: Heavily prioritises an exact mathematical distribution of stops across all available vehicles (e.g., 5 vehicles, 15 stops = exactly 3 stops per vehicle), regardless of the distance penalty. Useful when operational constraints (e.g., driver contracts, vehicle capacity) demand strict equality.
 
 ---
 

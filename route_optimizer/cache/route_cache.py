@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from route_optimizer.config.settings import settings
+from route_optimizer.optimization.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
