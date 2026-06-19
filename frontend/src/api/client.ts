@@ -3,7 +3,7 @@ import axios from 'axios';
 // Base API URL config
 const API_BASE_URL =
   `${import.meta.env.VITE_API_URL}/api/v1` ||
-  "https://logidispatch.onrender.com";
+  "https://logidispatch.onrender.com/api/v1";
 
 // Create a configured Axios instance
 const apiClient = axios.create({
