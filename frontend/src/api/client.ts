@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // Base API URL config
-export const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://logidispatch.onrender.com";
 
 // Create a configured Axios instance
 const apiClient = axios.create({
